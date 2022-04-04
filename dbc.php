@@ -1,27 +1,42 @@
 <?php
 
-$dsn = "mysql:host=localhost;dbname=blog_app;charaset=utf8";
-$user = 'root';
-$pass = '';
+function dbConnect(){
+    $dsn = "mysql:host=localhost;dbname=blog_app;charaset=utf8";
+    $user = 'root';
+    $pass = '';
+    try{
+        $dbh = new PDO($dsn,$user,$pass,[
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        ]);
+    } catch(PDOException $e){
+        echo '接続失敗'. $e->getMessage();
+        exit();
+    }
+    return $dbh;
+}
 
-try{
-    $dbh = new PDO($dsn,$user,$pass,[
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    ]);
-    // echo '接続成功！';
+function getAllBlog(){
+    $dbh = dbConnect();
     //sqlの準備
     $sql = 'select * from blog';
     //sqlの実行
     $stmt = $dbh->query($sql);
     //sqlの結果を受け取る
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // echo '<pre>';
-    // print_r($result);
-    // echo '</pre>';
+    return $result;
     $dbh = null;
-} catch(PDOException $e){
-    echo '接続失敗'. $e->getMessage();
-    exit;
+}
+
+$blogData = getAllBlog();
+
+function setCategoryName($category){
+    if ($category === '1'){
+        return 'ブログ';
+    } elseif ($category === '2'){
+        return '日常';
+    } else {
+        return 'その他';
+    }
 }
 
 ?>
@@ -42,11 +57,11 @@ try{
             <th>タイトル</th>
             <th>カテゴリ</th>
         </tr>
-        <?php foreach($result as $column): ?>
+        <?php foreach($blogData as $column): ?>
         <tr>
             <td><?php echo $column['id']?></td>
             <td><?php echo $column['title']?></td>
-            <td><?php echo $column['category']?></td>
+            <td><?php echo setCategoryName($column['category'])?></td>
         </tr>
         <?php endforeach; ?>
     </table>
