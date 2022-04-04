@@ -62,6 +62,7 @@ function setCategoryName($category){
             <td><?php echo $column['id']?></td>
             <td><?php echo $column['title']?></td>
             <td><?php echo setCategoryName($column['category'])?></td>
+            <td><a href="/php-tutorial/blog/detail.php?id=<?php echo $column['id']?>">詳細</a></td>
         </tr>
         <?php endforeach; ?>
     </table>
